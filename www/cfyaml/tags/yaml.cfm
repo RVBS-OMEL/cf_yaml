@@ -8,6 +8,7 @@ if( ! thistag.hasEndTag || thistag.executionMode == "end" ){
 
         case "read-file":
 
+            thistag.generatedContent=""
             variables.yamlObj = createObject("java", "org.yaml.snakeyaml.Yaml").init();
             variables.yamlStr = fileRead( attributes.path );
             caller[ attributes.variable ?: 'cfyaml_generated_struct' ] = variables.yamlObj.load(variables.yamlStr);
