@@ -1,14 +1,5 @@
 <cfscript>
 options = new cfyaml.DumperOptions();
-//writeDump(options.unwrap());
-yaml = new cfyaml.SnakeYAML();
-
-writeOutput("<pre>");
-writeOutput( yaml.dump([{"fname":"Anna", "lname"="Barbera"},{"fname":"Tex", "lname"="Avery"}]) )
-writeOutput("</pre>");
-
-
-
 
 lbTypes = ["MAC","WIN","UNIX","PLATFORM"];
 
@@ -20,8 +11,8 @@ lbTypes.each(
         options.getLineBreak() == name ? writeOutput("Success") : writeOutput("Failure");
         writeOutput("<hr>");
 
-        writeOutput( "Calling setLineBreak with type parameter = #lbTypes[i]#<br>" );
-        options.setLineBreak(#lbTypes[i]#);
+        writeOutput( "Calling setLineBreak with type parameter = #i#<br>" );
+        options.setLineBreak(#i#);
         writeOutput( "Current line break is #options.getLineBreak()#<br>" );
         options.getLineBreak() == #lbTypes[i]# ? writeOutput("Success") : writeOutput("Failure");
         writeOutput("<hr>");
@@ -38,12 +29,32 @@ flowTypes.each(
         options.getFlowStyle() == name ? writeOutput("Success") : writeOutput("Failure");
         writeOutput("<hr>");
 
-        writeOutput( "Calling setFlowStyle with type parameter = #flowTypes[i]#<br>" );
-        options.setFlowStyle(#flowTypes[i]#);
+        writeOutput( "Calling setFlowStyle with type parameter = #i#<br>" );
+        options.setFlowStyle(#i#);
         writeOutput( "Current flow style break is #options.getFlowStyle()#<br>" );
         options.getFlowStyle() == #flowTypes[i]# ? writeOutput("Success") : writeOutput("Failure");
         writeOutput("<hr>");
     }
 );
+
+
+styles = listToArray("DOUBLE_QUOTED,FOLDED,JSON_SCALAR_STYLE,LITERAL,PLAIN,SINGLE_QUOTED")
+
+styles.each(
+    (name,i)=>{
+        writeOutput( "Calling setScalarStyle with type parameter = #name#<br>" );
+        options.setScalarStyle(name);
+        writeOutput( "Current Scalar style is #options.getScalarStyle()#<br>" );
+        options.getScalarStyle() == name ? writeOutput("Success") : writeOutput("Failure");
+        writeOutput("<hr>");
+
+        writeOutput( "Calling setScalarStyle with type parameter = #i#<br>" );
+        options.setScalarStyle(i);
+        writeOutput( "Current Scalar style break is #options.getScalarStyle()#<br>" );
+        options.getScalarStyle() == #styles[i]# ? writeOutput("Success") : writeOutput("Failure");
+        writeOutput("<hr>");
+    }
+);
+
 
 </cfscript>                             

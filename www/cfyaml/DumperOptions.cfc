@@ -1,22 +1,31 @@
 component{
 
+    static{
+        static.CLASSPATH_DUMPEROPTIONS              = "org.yaml.snakeyaml.DumperOptions";
+        static.CLASSPATH_DUMPEROPTIONS_LINEBREAK    = "org.yaml.snakeyaml.DumperOptions$LineBreak";
+        static.CLASSPATH_DUMPEROPTIONS_FLOWSTYLE    = "org.yaml.snakeyaml.DumperOptions$FlowStyle";
+        static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE  = "org.yaml.snakeyaml.DumperOptions$ScalarStyle";
+    }
+
     public DumperOptions function init(){
         variables.dumperOptions = static.new();
         return this;
     }
 
     public static any function new(){
-        return createObject("java", "org.yaml.snakeyaml.DumperOptions").init();
+        return createObject("java", static.CLASSPATH_DUMPEROPTIONS ).init();
     }
 
     public any function unwrap(){
         return variables.dumperOptions;
     }
 
+    /**
+    Line breaks
+    */
+
     public any function setLineBreak( required any type ){
-
         
-
         var lbClassPath="org.yaml.snakeyaml.DumperOptions$LineBreak";
         var types = ["MAC","WIN","UNIX","PLATFORM"];
         
@@ -24,19 +33,19 @@ component{
             case "MAC":
             case "WIN":
             case "UNIX":
-                var lb = createObject("java", lbClassPath).valueOf( ucase(arguments.type) );
+                var lb = createObject("java", static.CLASSPATH_DUMPEROPTIONS_LINEBREAK).valueOf( ucase(arguments.type) );
                 local.found=true;
             break;
 
             case 4:
             case "PLATFORM":
-                var lb = createObject("java", lbClassPath).getPlatformLineBreak();
+                var lb = createObject("java", static.CLASSPATH_DUMPEROPTIONS_LINEBREAK).getPlatformLineBreak();
             break;
 
             case 1:
             case 2:
             case 3:
-                var lb = createObject("java", lbClassPath).valueOf( local.types[ arguments.type ] );
+                var lb = createObject("java", static.CLASSPATH_DUMPEROPTIONS_LINEBREAK).valueOf( local.types[ arguments.type ] );
             break;
 
             default:
@@ -57,26 +66,21 @@ component{
     }
 
 
-    /*
+    /**
     Flow style
     */
 
     public DumperOptions function setFlowStyle( required any flowStyle){
 
         var styles = ["AUTO", "BLOCK", "FLOW"];
-        var flowStyleClassPath = "org.yaml.snakeyaml.DumperOptions$FlowStyle";
 
         switch( arguments.flowStyle ){
 
-            case "AUTO":
-            case "FLOW":
-            case "BLOCK":
+            case "AUTO": case "FLOW": case "BLOCK":
                 var name = uCase(arguments.flowStyle);
             break;
 
-            case 1:
-            case 2:
-            case 3:
+            case 1: case 2: case 3:
                 var name = styles[arguments.flowStyle];
             break;
 
@@ -89,12 +93,52 @@ component{
 
         }
 
-        unwrap().setDefaultFlowStyle( createObject( "java", flowStyleClassPath ).valueOf( local.name ) );
+        unwrap().setDefaultFlowStyle( createObject( "java", static.CLASSPATH_DUMPEROPTIONS_FLOWSTYLE ).valueOf( local.name ) );
         return this;
     }
 
     public string function getFlowStyle(){
+
         return unwrap().getDefaultFlowStyle().name();
     }
+
+    /*
+    Scalar Style
+    */
+
+    public DumperOptions function setScalarStyle( required any style ){
+        
+        var styles = listToArray("DOUBLE_QUOTED,FOLDED,JSON_SCALAR_STYLE,LITERAL,PLAIN,SINGLE_QUOTED");
+
+        if( arrayFindNoCase( styles, arguments.style ) ){
+            unwrap().setDefaultScalarStyle(
+                createObject("java", static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE).valueOf( ucase(arguments.style) )
+            );
+            return this;
+        }
+
+        if( isNumeric(arguments.style) ){
+            var name="";
+            try{
+                unwrap().setDefaultScalarStyle(
+                    createObject("java", static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE).valueOf( styles[arguments.style] )
+                );
+            }catch(any e){
+                
+            }
+            return this;
+        }
+
+        throw( 
+            type="CFYAML_DUMPEROPTIONS_WRONG_SCALAR_STYLE", 
+            message="Scalar Style must be one of these values in #serializeJson(styles)#" 
+        );
+    }
+
+    public string function getScalarStyle(){
+
+        return unwrap().getDefaultScalarStyle().name();
+    }
+
 
 }
