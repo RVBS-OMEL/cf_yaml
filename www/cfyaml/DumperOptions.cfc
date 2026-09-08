@@ -30,21 +30,16 @@ component{
         var types = ["MAC","WIN","UNIX","PLATFORM"];
         
         switch(arguments.type){
-            case "MAC":
-            case "WIN":
-            case "UNIX":
+            case "MAC": case "WIN": case "UNIX":
                 var lb = createObject("java", static.CLASSPATH_DUMPEROPTIONS_LINEBREAK).valueOf( ucase(arguments.type) );
                 local.found=true;
             break;
 
-            case 4:
-            case "PLATFORM":
+            case 4: case "PLATFORM":
                 var lb = createObject("java", static.CLASSPATH_DUMPEROPTIONS_LINEBREAK).getPlatformLineBreak();
             break;
 
-            case 1:
-            case 2:
-            case 3:
+            case 1: case 2: case 3:
                 var lb = createObject("java", static.CLASSPATH_DUMPEROPTIONS_LINEBREAK).valueOf( local.types[ arguments.type ] );
             break;
 
@@ -118,7 +113,7 @@ component{
         }
 
         if( isNumeric(arguments.style) ){
-            
+
             var name="";
             try{
                 local.name = styles[arguments.style];
