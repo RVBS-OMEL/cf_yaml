@@ -118,14 +118,15 @@ component{
         }
 
         if( isNumeric(arguments.style) ){
+            
             var name="";
             try{
-                unwrap().setDefaultScalarStyle(
-                    createObject("java", static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE).valueOf( styles[arguments.style] )
-                );
-            }catch(any e){
-                
-            }
+                local.name = styles[arguments.style];
+            }catch(any e){}
+
+            unwrap().setDefaultScalarStyle(
+                createObject("java", static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE).valueOf( local.name )
+            );
             return this;
         }
 
