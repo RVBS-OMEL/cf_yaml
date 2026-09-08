@@ -1,11 +1,5 @@
 component{
 
-    static{
-        static.LB_UNIX_INSTANCE = createObject("java", "org.yaml.snakeyaml.DumperOptions$LineBreak").UNIX;
-        static.LB_MAC_INSTANCE = createObject("java", "org.yaml.snakeyaml.DumperOptions$LineBreak").MAC;
-        static.LB_WIN_INSTANCE = createObject("java", "org.yaml.snakeyaml.DumperOptions$LineBreak").WIN;
-    }
-
     public DumperOptions function init(){
         variables.dumperOptions = static.new();
         return this;
@@ -21,61 +15,86 @@ component{
 
     public any function setLineBreak( required any type ){
 
-        local.jtype = 0;
         
 
+        var lbClassPath="org.yaml.snakeyaml.DumperOptions$LineBreak";
+        var types = ["MAC","WIN","UNIX","PLATFORM"];
+        
         switch(arguments.type){
-
             case "MAC":
-            case 1:
-                local.jtype = static.LB_MAC_INSTANCE;
-            break;
-
-            case "UNIX":
-            case 2:
-                local.jtype = static.LB_UNIX_INSTANCE;
-            break;
-
             case "WIN":
-            case 3:
-                local.jtype = static.LB_WIN_INSTANCE;
+            case "UNIX":
+                var lb = createObject("java", lbClassPath).valueOf( ucase(arguments.type) );
+                local.found=true;
             break;
 
-            case "PLATFORM":
             case 4:
-                local.jtype = createObject("java",local.classPath).getPlatformLineBreak();
+            case "PLATFORM":
+                var lb = createObject("java", lbClassPath).getPlatformLineBreak();
+            break;
+
+            case 1:
+            case 2:
+            case 3:
+                var lb = createObject("java", lbClassPath).valueOf( local.types[ arguments.type ] );
             break;
 
             default:
                 throw( 
                     type="CFYAML_DUMPEROPTIONS_WRONG_LB_TYPE", 
                     message="Line break can be 'MAC' (or 1), 'UNIX' (or 2 (default used by SnakeYaml)), 'WIN' (or 3), 'PLATFORM' (or 4 = server platform LB)" 
-                    );
+                );
             break;
         }
-        unwrap().setLineBreak(jtype);
+
+        unwrap().setLineBreak( local.lb );
         return this;
+
+    }
+
+    public string function getLineBreak(){
+        return unwrap().getLineBreak().name();
     }
 
 
-    
+    /*
+    Flow style
+    */
 
-    public string function getLineBreak(){
+    public DumperOptions function setFlowStyle( required any flowStyle){
 
-        var lb = unwrap().getLineBreak();
+        var styles = ["AUTO", "BLOCK", "FLOW"];
+        var flowStyleClassPath = "org.yaml.snakeyaml.DumperOptions$FlowStyle";
 
-        if( lb == static.LB_WIN_INSTANCE ){
-            return "WIN";
+        switch( arguments.flowStyle ){
+
+            case "AUTO":
+            case "FLOW":
+            case "BLOCK":
+                var name = uCase(arguments.flowStyle);
+            break;
+
+            case 1:
+            case 2:
+            case 3:
+                var name = styles[arguments.flowStyle];
+            break;
+
+            default:
+                throw( 
+                    type="CFYAML_DUMPEROPTIONS_WRONG_FLOW_STYLE", 
+                    message="Flow style can be 'AUTO' (or 1), 'FLOW' (or 2), 'BLOCK' (or 3)" 
+                );
+            break;
+
         }
 
-        if( lb == static.LB_UNIX_INSTANCE ){
-            return "UNIX";
-        }  
-        
-        if( lb == static.LB_MAC_INSTANCE ){
-            return "MAC";
-        } 
+        unwrap().setDefaultFlowStyle( createObject( "java", flowStyleClassPath ).valueOf( local.name ) );
+        return this;
+    }
 
+    public string function getFlowStyle(){
+        return unwrap().getDefaultFlowStyle().name();
     }
 
 }
