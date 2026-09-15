@@ -1,60 +1,60 @@
+<html>
+    <head>
+        <cfinclude template="style.cfm" runonce="true" />
+    </head>
+    <body>
+        <cfinclude template="navbar.cfm" runonce="true" />
 <cfscript>
 options = new cfyaml.DumperOptions();
 
-lbTypes = ["MAC","WIN","UNIX","PLATFORM"];
 
-lbTypes.each(
-    (name,i)=>{
-        writeOutput( "Calling setLineBreak with type parameter = #name#<br>" );
-        options.setLineBreak(name);
-        writeOutput( "Current line break is #options.getLineBreak()#<br>" );
-        options.getLineBreak() == name ? writeOutput("Success") : writeOutput("Failure");
-        writeOutput("<hr>");
+enums = [
+    {
+        names: ["MAC","WIN","UNIX","PLATFORM"],
+        cfSetterFunctionCalled = "setLineBreak",
+        cfGetterFunctionCalled = "getLineBreak",
+        propertyDescription = "line break"
+    },
+    {
+        names: ["AUTO", "BLOCK", "FLOW"],
+        cfSetterFunctionCalled = "setFlowStyle",
+        cfGetterFunctionCalled = "getFlowStyle",
+        propertyDescription = "flow style"
+    },
+    {
+        names: listToArray("DOUBLE_QUOTED,FOLDED,JSON_SCALAR_STYLE,LITERAL,PLAIN,SINGLE_QUOTED"),
+        cfSetterFunctionCalled = "setScalarStyle",
+        cfGetterFunctionCalled = "getScalarStyle",
+        propertyDescription = "scalar style"
+    },
+    {
+        names: listToArray("BINARY,ESCAPE"),
+        cfSetterFunctionCalled = "setNonPrintableStyle",
+        cfGetterFunctionCalled = "getNonPrintableStyle",
+        propertyDescription = "printable style"
+    }
+];
 
-        writeOutput( "Calling setLineBreak with type parameter = #i#<br>" );
-        options.setLineBreak(#i#);
-        writeOutput( "Current line break is #options.getLineBreak()#<br>" );
-        options.getLineBreak() == #lbTypes[i]# ? writeOutput("Success") : writeOutput("Failure");
+enums.each(
+    (obj,idx) => {
         writeOutput("<hr>");
+        writeOutput("Testing #obj.propertyDescription#<br />");
+        obj.names.each(
+            ( name, idxName ) => {
+                var fName = obj.cfSetterFunctionCalled;
+                writeOutput( "Calling #fName# with type parameter = #name#<br>" );
+                options[  fName ](name);
+                
+                var fName = obj.cfGetterFunctionCalled;
+                writeOutput( "Calling #fName# must return #name#<br>" );
+                options[fName]() == name ? writeOutput("Success") : writeOutput("Failure");
+                writeOutput("<br>");
+            }
+        );
+
     }
 );
-
-flowTypes = ["AUTO", "BLOCK", "FLOW"];
-
-flowTypes.each(
-    (name,i)=>{
-        writeOutput( "Calling setFlowStyle with type parameter = #name#<br>" );
-        options.setFlowStyle(name);
-        writeOutput( "Current flow style is #options.getFlowStyle()#<br>" );
-        options.getFlowStyle() == name ? writeOutput("Success") : writeOutput("Failure");
-        writeOutput("<hr>");
-
-        writeOutput( "Calling setFlowStyle with type parameter = #i#<br>" );
-        options.setFlowStyle(#i#);
-        writeOutput( "Current flow style break is #options.getFlowStyle()#<br>" );
-        options.getFlowStyle() == #flowTypes[i]# ? writeOutput("Success") : writeOutput("Failure");
-        writeOutput("<hr>");
-    }
-);
-
-
-styles = listToArray("DOUBLE_QUOTED,FOLDED,JSON_SCALAR_STYLE,LITERAL,PLAIN,SINGLE_QUOTED")
-
-styles.each(
-    (name,i)=>{
-        writeOutput( "Calling setScalarStyle with type parameter = #name#<br>" );
-        options.setScalarStyle(name);
-        writeOutput( "Current Scalar style is #options.getScalarStyle()#<br>" );
-        options.getScalarStyle() == name ? writeOutput("Success") : writeOutput("Failure");
-        writeOutput("<hr>");
-
-        writeOutput( "Calling setScalarStyle with type parameter = #i#<br>" );
-        options.setScalarStyle(i);
-        writeOutput( "Current Scalar style break is #options.getScalarStyle()#<br>" );
-        options.getScalarStyle() == #styles[i]# ? writeOutput("Success") : writeOutput("Failure");
-        writeOutput("<hr>");
-    }
-);
-
-
-</cfscript>                             
+</cfscript>    
+    </body>
+</html>
+                         

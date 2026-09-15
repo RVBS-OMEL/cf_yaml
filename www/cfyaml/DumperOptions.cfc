@@ -5,6 +5,7 @@ component{
         static.CLASSPATH_DUMPEROPTIONS_LINEBREAK    = "org.yaml.snakeyaml.DumperOptions$LineBreak";
         static.CLASSPATH_DUMPEROPTIONS_FLOWSTYLE    = "org.yaml.snakeyaml.DumperOptions$FlowStyle";
         static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE  = "org.yaml.snakeyaml.DumperOptions$ScalarStyle";
+        static.CLASSPATH_DUMPEROPTIONS_NONPRINTABLESTYLE  = "org.yaml.snakeyaml.DumperOptions$NonPrintableStyle";
     }
 
     public DumperOptions function init(){
@@ -97,7 +98,7 @@ component{
         return unwrap().getDefaultFlowStyle().name();
     }
 
-    /*
+    /**
     Scalar Style
     */
 
@@ -135,6 +136,47 @@ component{
 
         return unwrap().getDefaultScalarStyle().name();
     }
+
+    /**
+    NON PRINTABLE STYLE
+    */
+
+    public any function getNonPrintableStyle(){
+        return unwrap().getNonPrintableStyle();
+    }
+
+    public DumperOptions function setNonPrintableStyle( required string style ){
+        var styles = listToArray("BINARY,ESCAPE");
+
+        if( arrayFindNoCase( styles, arguments.style ) ){
+            unwrap().setNonPrintableStyle(
+                createObject("java", static.CLASSPATH_DUMPEROPTIONS_NONPRINTABLESTYLE).valueOf( ucase(arguments.style) )
+            );
+            return this;
+        }
+
+        if( isNumeric(arguments.style) ){
+
+            var name="";
+            try{
+                local.name = styles[arguments.style];
+            }catch(any e){}
+
+            unwrap().setNonPrintableStyle(
+                createObject("java", static.CLASSPATH_DUMPEROPTIONS_NONPRINTABLESTYLE).valueOf( local.name )
+            );
+            return this;
+        }
+
+        throw( 
+            type="CFYAML_DUMPEROPTIONS_WRONG_SCALAR_STYLE", 
+            message="Scalar Style must be one of these values in #serializeJson(styles)#" 
+        );
+    }
+
+    
+
+
 
 
 }
