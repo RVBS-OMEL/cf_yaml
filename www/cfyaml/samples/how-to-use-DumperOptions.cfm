@@ -32,29 +32,74 @@ enums = [
         cfSetterFunctionCalled = "setNonPrintableStyle",
         cfGetterFunctionCalled = "getNonPrintableStyle",
         propertyDescription = "printable style"
+    },
+    {
+        names: listToArray("V1_0,V1_1"),
+        cfSetterFunctionCalled = "setVersion",
+        cfGetterFunctionCalled = "getVersion",
+        propertyDescription = "version"
     }
 ];
-
+chr1310 = "#chr(13)##chr(10)#"
 enums.each(
     (obj,idx) => {
         writeOutput("<hr>");
+
+        if(obj.propertyDescription == "version"){
+           writeOutput("<h1>Neither setVersion nor getVersion should be used !</h1>") 
+        }
+
         writeOutput("Testing #obj.propertyDescription#<br />");
         obj.names.each(
             ( name, idxName ) => {
-                var fName = obj.cfSetterFunctionCalled;
-                writeOutput( "Calling #fName# with type parameter = #name#<br>" );
-                options[  fName ](name);
+                var setter = obj.cfSetterFunctionCalled;
+
+                writeOutput( "<pre>//Calling #local.setter# with type parameter = #name##chr1310#" );
+                writeOutput( "options = new cfyaml.DumperOptions();#chr1310#options.#local.setter#(""#name#"")#chr1310#" );
+                options[  setter ](name);
                 
-                var fName = obj.cfGetterFunctionCalled;
-                writeOutput( "Calling #fName# must return #name#<br>" );
-                options[fName]() == name ? writeOutput("Success") : writeOutput("Failure");
-                writeOutput("<br>");
+                var getter = obj.cfGetterFunctionCalled;
+                
+
+                if( obj.propertyDescription == 'version' ){
+                    var expectedValue = (name == "V1_0" ||name == 1 ) ? "1.0" : "1.1";
+                    writeOutput( "//Calling #getter# must return #expectedValue##chr1310#" );
+                    writeOutput( "options.#getter#()" );
+                    options[getter]() == expectedValue ? writeOutput("Success") : writeOutput("Failure");
+                }
+                else if( obj.propertyDescription == 'line break' && name=="platform"){
+                    writeOutput( "//Calling #getter# must return ""UNIX""#chr1310#" );
+                    options[getter]() == "UNIX" ? writeOutput("Success") : writeOutput("Failure");
+                }
+                else{
+                    writeOutput( "//Calling #getter# must return #name##chr1310#" );
+                    options[getter]() == name ? writeOutput("Success") : writeOutput("Failure");
+                }
+
+
+                writeOutput( "#chr1310#//=======================================================================================#chr1310#" );
+                writeOutput( "//Calling #local.setter# with type parameter = #idxName##chr1310#" );
+                writeOutput( "options = new cfyaml.DumperOptions();#chr1310#options.#local.setter#(#idxName#)#chr1310#" );
+                options[ setter ](idxName);
+                writeOutput( "//Calling #getter# must return #name##chr1310#" );
+                writeOutput( "//Calling #getter# must return #name##chr1310#" );
+                options[getter]() == name ? writeOutput("Success") : writeOutput("Failure");
+                
+                writeOutput("</pre><br>");
             }
         );
 
     }
 );
+
+
+
 </cfscript>    
+
+    <hr/>
+    <cfset options.setVersion(1) />
+    <cfdump var="#options.getVersion()#">
+
     </body>
 </html>
                          

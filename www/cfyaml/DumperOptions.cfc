@@ -1,11 +1,12 @@
 component{
 
     static{
-        static.CLASSPATH_DUMPEROPTIONS              = "org.yaml.snakeyaml.DumperOptions";
-        static.CLASSPATH_DUMPEROPTIONS_LINEBREAK    = "org.yaml.snakeyaml.DumperOptions$LineBreak";
-        static.CLASSPATH_DUMPEROPTIONS_FLOWSTYLE    = "org.yaml.snakeyaml.DumperOptions$FlowStyle";
-        static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE  = "org.yaml.snakeyaml.DumperOptions$ScalarStyle";
-        static.CLASSPATH_DUMPEROPTIONS_NONPRINTABLESTYLE  = "org.yaml.snakeyaml.DumperOptions$NonPrintableStyle";
+        static.CLASSPATH_DUMPEROPTIONS                      = "org.yaml.snakeyaml.DumperOptions";
+        static.CLASSPATH_DUMPEROPTIONS_LINEBREAK            = "org.yaml.snakeyaml.DumperOptions$LineBreak";
+        static.CLASSPATH_DUMPEROPTIONS_FLOWSTYLE            = "org.yaml.snakeyaml.DumperOptions$FlowStyle";
+        static.CLASSPATH_DUMPEROPTIONS_SCALARSTYLE          = "org.yaml.snakeyaml.DumperOptions$ScalarStyle";
+        static.CLASSPATH_DUMPEROPTIONS_NONPRINTABLESTYLE    = "org.yaml.snakeyaml.DumperOptions$NonPrintableStyle";
+        static.CLASSPATH_DUMPEROPTIONS_VERSION              = "org.yaml.snakeyaml.DumperOptions$Version";
     }
 
     public DumperOptions function init(){
@@ -169,9 +170,49 @@ component{
         }
 
         throw( 
-            type="CFYAML_DUMPEROPTIONS_WRONG_SCALAR_STYLE", 
-            message="Scalar Style must be one of these values in #serializeJson(styles)#" 
+            type="CFYAML_DUMPEROPTIONS_WRONG_NONPRINTABLESTYLE", 
+            message="Non Printable Style must be one of these values in #serializeJson(styles)#" 
         );
+    }
+
+    /**
+    VERSION
+    */
+    public string function getVersion(){
+        return unwrap().getVersion().getRepresentation();
+    }
+
+    public DumperOptions function setVersion( required string version ){
+        
+        var styles = listToArray("V1_0,V1_1");
+        var name="";
+
+        switch(  arguments.version ){
+
+            case "V1_0":
+            case "V1_1":
+                local.name = arguments.version;
+            break;
+
+            case 1:
+            case 2:
+                name = styles[arguments.version];
+            break;
+
+            default:
+        }
+
+        if( local.name == "" ){
+            throw( 
+                type="CFYAML_DUMPEROPTIONS_WRONG_VERSION", 
+                message="Version must be one of these values in #serializeJson(styles)#" 
+            );
+        }
+
+        unwrap().setVersion( createObject("java", static.CLASSPATH_DUMPEROPTIONS_VERSION).valueOf(local.name) );
+
+        return this;
+
     }
 
     
